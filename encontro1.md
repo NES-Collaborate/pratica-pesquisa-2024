@@ -737,20 +737,25 @@ print(df.dtypes)
 
 <a id="7"></a>
 
-## 7. Aplicação de Funções
-
-A aplicação de funções é fundamental para manipulação avançada de dados.
-
-<a id="7.1"></a>
-
 ### 7.1 Uso de `apply`
 
-O `apply()` permite aplicar funções customizadas a colunas ou linhas.
+O método `apply()` no Pandas permite aplicar funções personalizadas em colunas ou linhas de um DataFrame ou Series. Ele é extremamente flexível e pode ser utilizado para aplicar uma função em uma única coluna (ou linha), ou mesmo em múltiplas colunas se for usado com funções mais complexas.
 
-**Exemplo 31:**
+#### Quando usar `apply()`?
+
+- Quando você precisa de uma transformação mais complexa do que as funções embutidas do Pandas podem oferecer.
+- Para aplicar funções em colunas ou linhas individualmente.
+- Para usar funções definidas pelo usuário (UDFs) para transformar dados.
+
+#### Diferença entre `apply()` e outras funções:
+
+- **`apply()` é mais versátil**. Ele pode trabalhar tanto em colunas quanto em linhas inteiras e pode aplicar funções que retornam valores escalares ou novos DataFrames/Series.
+- Pode ser usado com funções definidas pelo usuário ou lambdas.
+
+#### Exemplo 1: Aplicar uma função para classificar idade em categorias
 
 ```python
-# Aplicar função que classifica idade
+# Função para classificar idades em grupos
 def classificar_idade(idade):
     if idade < 30:
         return 'Jovem'
@@ -763,81 +768,318 @@ df['Faixa Etária'] = df['Idade'].apply(classificar_idade)
 print(df)
 ```
 
----
+**Explicação**:
+Neste exemplo, a função `classificar_idade()` é aplicada a cada valor da coluna `Idade`. Dependendo da idade, ela retorna uma categoria (`Jovem`, `Adulto`, `Sênior`), e essa categoria é inserida em uma nova coluna chamada `Faixa Etária`.
 
-<a id="7.2"></a>
+#### Exemplo 2: Usando `apply()` para operações em múltiplas colunas
+
+```python
+# Aplicar uma função para somar 'Idade' e 'Salário'
+df['Total'] = df.apply(lambda row: row['Idade'] + row['Salário'], axis=1)
+print(df)
+```
+
+**Explicação**:
+Aqui, a função lambda soma os valores das colunas `Idade` e `Salário` para cada linha do DataFrame. O parâmetro `axis=1` indica que estamos aplicando a função ao longo das linhas (e não das colunas).
+
+---
 
 ### 7.2 Uso de `map`
 
-**Exemplo 33:**
+O método `map()` é usado principalmente para substituir ou mapear valores em uma Series com base em um dicionário ou função. Ele é mais limitado que o `apply()` porque só funciona com Series e não pode ser aplicado em múltiplas colunas ou linhas. No entanto, ele é muito útil quando você deseja fazer substituições diretas de valores.
+
+#### Quando usar `map()`?
+
+- Quando você quer substituir valores em uma única coluna com base em um dicionário ou uma função.
+- Para mapear valores de uma Series para outros valores.
+
+#### Diferença entre `map()` e `apply()`:
+
+- **`map()` só funciona em Series**, enquanto `apply()` pode ser usado em DataFrames ou Series.
+- `map()` é mais eficiente para substituições simples, como mapear valores de uma Series para outros.
+
+#### Exemplo 1: Mapear valores com um dicionário
 
 ```python
-# Mapear valores em uma série
+# Dicionário de mapeamento
 mapeamento = {'Ana': 'A', 'Bruno': 'B', 'Carlos': 'C'}
+
+# Aplicar o mapeamento
 df['Iniciais'] = df['Nome'].map(mapeamento)
 print(df)
 ```
 
----
+**Explicação**:
+Aqui, o método `map()` substitui os valores da coluna `Nome` com base no dicionário `mapeamento`. O nome "Ana" se torna "A", "Bruno" se torna "B", e assim por diante. Esse tipo de operação é extremamente eficiente para substituições diretas.
 
-<a id="7.3"></a>
+#### Exemplo 2: Mapear valores com uma função
+
+```python
+# Mapear com uma função lambda para deixar os nomes em maiúsculas
+df['Nome Maiúsculo'] = df['Nome'].map(lambda x: x.upper())
+print(df)
+```
+
+**Explicação**:
+Neste exemplo, usamos `map()` com uma função lambda para converter os nomes da coluna `Nome` para letras maiúsculas. O `map()` percorre cada elemento da Series e aplica a função.
+
+---
 
 ### 7.3 Uso de `applymap`
 
-**Exemplo 35:**
+O `applymap()` é um método que funciona em todo o DataFrame, aplicando uma função a **cada elemento individual**. Ele é útil quando você deseja aplicar a mesma função em todos os valores de um DataFrame, coluna por coluna e linha por linha.
+
+#### Quando usar `applymap()`?
+
+- Quando você quer aplicar uma função em cada valor individual de um DataFrame.
+- Quando você precisa transformar ou manipular todos os elementos de um DataFrame ao mesmo tempo.
+
+#### Diferença entre `applymap()` e `apply()`:
+
+- **`applymap()`** é específico para DataFrames, e **trabalha elemento por elemento**.
+- **`apply()`** pode ser usado tanto em DataFrames quanto em Series, mas trabalha por linha ou coluna, não em elementos individuais.
+
+#### Exemplo 1: Multiplicar todos os valores numéricos por 2
 
 ```python
-# Aplicar função a todos os elementos do DataFrame
+# Aplicar função lambda para dobrar todos os valores no DataFrame numérico
 df_numerico = df[['Idade', 'Salário']]
 df_dobro = df_numerico.applymap(lambda x: x * 2)
 print(df_dobro)
 ```
 
+**Explicação**:
+Aqui usamos `applymap()` para aplicar uma função lambda que multiplica por 2 cada valor do DataFrame `df_numerico`. Cada valor da coluna `Idade` e `Salário` é processado individualmente e multiplicado por 2.
+
+#### Exemplo 2: Transformar todos os valores em string
+
+```python
+# Converter todos os valores do DataFrame para string
+df_str = df.applymap(str)
+print(df_str)
+```
+
+**Explicação**:
+Neste exemplo, usamos `applymap()` para converter cada valor do DataFrame em uma string. Cada elemento, independentemente de seu tipo original, será transformado em uma string.
+
+---
+
+### Diferença entre `apply()`, `map()` e `applymap()`
+
+| Método       | Escopo              | Uso Comum                                     | Funcionamento                                                                            |
+| ------------ | ------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `apply()`    | DataFrame ou Series | Aplicar funções em colunas ou linhas inteiras | Pode trabalhar em colunas ou linhas inteiras, ideal para operações complexas.            |
+| `map()`      | Series              | Substituir ou mapear valores individuais      | Trabalha apenas com Series e é ideal para substituições diretas.                         |
+| `applymap()` | DataFrame           | Aplicar uma função em todos os elementos      | Aplica uma função em cada elemento de um DataFrame, ideal para manipulações elementares. |
+
+#### Resumo:
+
+- Use `apply()` quando precisar aplicar uma função em uma coluna ou linha inteira.
+- Use `map()` quando quiser substituir valores em uma Series com base em um dicionário ou função.
+- Use `applymap()` quando precisar aplicar a mesma função em cada elemento de um DataFrame.
+
+Esses métodos são poderosos para manipular e transformar dados no Pandas e, dependendo da tarefa, um deles será mais eficiente e apropriado que os outros.
+
 ---
 
 <a id="8"></a>
 
-## 8. Trabalhando com Dados Ausentes
+### 8. Trabalhando com Dados Ausentes
 
-Identificar e lidar com dados ausentes é crucial para garantir a qualidade da análise.
+Trabalhar com dados ausentes é uma parte fundamental do pré-processamento de dados. Valores nulos ou ausentes podem ocorrer por diversos motivos, como falhas na coleta de dados ou erros de processamento. Pandas oferece uma ampla gama de métodos para identificar, remover e substituir esses valores, garantindo que sua análise seja confiável.
+
+---
 
 <a id="8.1"></a>
 
-### 8.1 Identificação de valores nulos
+### 8.1 Identificação de Valores Nulos
 
-**Exemplo 36:**
+Pandas fornece funções como `isnull()` e `notnull()` para identificar valores nulos. Elas retornam um DataFrame ou Series de valores booleanos, onde `True` indica que o valor é nulo (`NaN`), e `False` indica que o valor não é nulo.
+
+#### Exemplos de Identificação de Valores Nulos:
+
+**Exemplo 1: Verificar se existem valores nulos no DataFrame**
 
 ```python
-# Verificar valores nulos
+# Verificar se há valores nulos no DataFrame
 print(df.isnull())
+```
+
+**Exemplo 2: Contar o número de valores nulos por coluna**
+
+```python
+# Contar o número de valores nulos em cada coluna
+print(df.isnull().sum())
+```
+
+**Exemplo 3: Verificar colunas específicas quanto a valores nulos**
+
+```python
+# Verificar valores nulos em uma coluna específica
+print(df['Salário'].isnull())
+
+# Verificar valores nulos em múltiplas colunas
+print(df[['Nome', 'Idade']].isnull())
+```
+
+**Exemplo 4: Verificar valores não nulos**
+
+```python
+# Verificar onde os valores NÃO são nulos
+print(df.notnull())
+```
+
+**Exemplo 5: Filtrar linhas que têm valores nulos em uma coluna específica**
+
+```python
+# Selecionar linhas onde 'Salário' está ausente (nulo)
+df_nulos = df[df['Salário'].isnull()]
+print(df_nulos)
 ```
 
 ---
 
 <a id="8.2"></a>
 
-### 8.2 Remoção de valores nulos
+### 8.2 Remoção de Valores Nulos
 
-**Exemplo 38:**
+Pandas permite remover valores nulos de várias formas. O método mais comum é o `dropna()`, que remove linhas ou colunas onde os valores são nulos.
+
+#### Exemplos de Remoção de Valores Nulos:
+
+**Exemplo 1: Remover todas as linhas que contenham valores nulos**
 
 ```python
-# Remover linhas com valores nulos
+# Remover todas as linhas que contenham algum valor nulo
 df_sem_nulos = df.dropna()
 print(df_sem_nulos)
 ```
+
+**Exemplo 2: Remover colunas que contenham valores nulos**
+
+```python
+# Remover todas as colunas que contenham algum valor nulo
+df_sem_nulos_colunas = df.dropna(axis=1)
+print(df_sem_nulos_colunas)
+```
+
+**Exemplo 3: Remover linhas apenas se todas as colunas tiverem valores nulos**
+
+```python
+# Remover linhas onde TODAS as colunas são nulas
+df_sem_nulos_total = df.dropna(how='all')
+print(df_sem_nulos_total)
+```
+
+**Exemplo 4: Remover linhas apenas se uma quantidade mínima de valores não nulos estiver presente**
+
+```python
+# Manter linhas que tenham pelo menos 2 valores não nulos
+df_minimos_valores = df.dropna(thresh=2)
+print(df_minimos_valores)
+```
+
+**Exemplo 5: Remover valores nulos apenas em colunas específicas**
+
+```python
+# Remover linhas onde há valores nulos apenas na coluna 'Salário'
+df_sem_nulos_salario = df.dropna(subset=['Salário'])
+print(df_sem_nulos_salario)
+```
+
+#### Parâmetros importantes de `dropna()`:
+
+- **`axis=0`** (padrão): Remove valores nulos em linhas.
+- **`axis=1`**: Remove valores nulos em colunas.
+- **`how='any'`** (padrão): Remove a linha/coluna se **qualquer** valor for nulo.
+- **`how='all'`**: Remove a linha/coluna apenas se **todos** os valores forem nulos.
+- **`thresh`**: Mantém a linha/coluna se contiver ao menos um número mínimo de valores não nulos.
 
 ---
 
 <a id="8.3"></a>
 
-### 8.3 Substituição de valores nulos
+### 8.3 Substituição de Valores Nulos
 
-**Exemplo 41:**
+Em vez de remover dados, muitas vezes é útil preencher (ou imputar) valores nulos com algum valor de substituição. Pandas permite fazer isso com o método `fillna()`.
+
+#### Exemplos de Substituição de Valores Nulos:
+
+**Exemplo 1: Substituir valores nulos por zero**
 
 ```python
-# Preencher valores nulos com zero
+# Substituir todos os valores nulos por 0
 df_preenchido = df.fillna(0)
 print(df_preenchido)
+```
+
+**Exemplo 2: Substituir valores nulos com a média de uma coluna**
+
+```python
+# Preencher os valores nulos na coluna 'Salário' com a média dos salários
+df['Salário'] = df['Salário'].fillna(df['Salário'].mean())
+print(df)
+```
+
+**Exemplo 3: Substituir valores nulos com o valor anterior (preenchimento forward)**
+
+```python
+# Preencher valores nulos com o valor da linha anterior
+df_preenchido = df.fillna(method='ffill')
+print(df_preenchido)
+```
+
+**Exemplo 4: Substituir valores nulos com o próximo valor válido (preenchimento backward)**
+
+```python
+# Preencher valores nulos com o próximo valor válido
+df_preenchido = df.fillna(method='bfill')
+print(df_preenchido)
+```
+
+**Exemplo 5: Substituir valores nulos em colunas específicas**
+
+```python
+# Preencher valores nulos na coluna 'Salário' com 5000 e na coluna 'Idade' com a média da coluna
+df_preenchido = df.fillna({'Salário': 5000, 'Idade': df['Idade'].mean()})
+print(df_preenchido)
+```
+
+#### Parâmetros importantes de `fillna()`:
+
+- **`value`**: Define o valor para preencher os valores nulos.
+- **`method`**: Permite preenchimento com o valor anterior (`ffill`) ou próximo valor (`bfill`).
+- **`inplace=False`**: Se `True`, modifica o DataFrame original em vez de retornar uma nova cópia.
+- **`limit`**: Limita o número de valores nulos a preencher.
+
+---
+
+### Contagem de Valores Nulos
+
+Pandas oferece formas eficientes de contar valores nulos em todo o DataFrame ou em colunas específicas.
+
+**Exemplo 1: Contar o número total de valores nulos no DataFrame**
+
+```python
+# Contar o número total de valores nulos no DataFrame
+total_nulos = df.isnull().sum().sum()
+print(f'Total de valores nulos: {total_nulos}')
+```
+
+**Exemplo 2: Contar valores nulos por coluna**
+
+```python
+# Contar valores nulos em cada coluna
+nulos_por_coluna = df.isnull().sum()
+print(nulos_por_coluna)
+```
+
+**Exemplo 3: Contar valores nulos em colunas específicas**
+
+```python
+# Contar valores nulos apenas nas colunas 'Salário' e 'Idade'
+nulos_selecionados = df[['Salário', 'Idade']].isnull().sum()
+print(nulos_selecionados)
 ```
 
 ---
