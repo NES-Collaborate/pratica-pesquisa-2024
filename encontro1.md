@@ -547,13 +547,22 @@ print(df_filtrado)
 
 ---
 
-<a id="5.2"></a>
+### 5.2 Filtragem com Múltiplas Condições
 
-### 5.2 Filtragem com múltiplas condições
+A filtragem com múltiplas condições em Pandas é feita combinando expressões lógicas. Você pode usar operadores como `&` (E lógico), `|` (OU lógico) e `~` (NÃO lógico) para filtrar os dados de forma mais específica. Esses operadores funcionam em nível elementar, o que significa que eles avaliam as condições para cada linha do DataFrame.
 
-Você pode combinar condições usando operadores lógicos (`&`, `|`, `~`).
+#### Operadores lógicos:
 
-**Exemplo 20:**
+- **`&`** (E lógico): Retorna verdadeiro se **ambas** as condições forem verdadeiras.
+- **`|`** (OU lógico): Retorna verdadeiro se **uma ou ambas** as condições forem verdadeiras.
+- **`~`** (NÃO lógico): Inverte o valor lógico (True para False, e vice-versa).
+
+#### Importante:
+
+- Quando você utiliza múltiplas condições, cada uma delas deve estar entre parênteses `()` para evitar problemas de precedência.
+- Estes operadores não são os mesmos que os operadores lógicos do Python (`and`, `or`, `not`). O Pandas requer esses operadores elementares para vetores de dados.
+
+#### Exemplo Explicado:
 
 ```python
 # Filtrar onde 'Idade' > 30 e 'Salário' > 5000
@@ -561,13 +570,87 @@ df_filtrado = df[(df['Idade'] > 30) & (df['Salário'] > 5000)]
 print(df_filtrado)
 ```
 
-**Exemplo 21:**
+**Explicação**:
+Aqui estamos selecionando as linhas onde a idade é maior que 30 **e** o salário é maior que 5000. Ambas as condições precisam ser verdadeiras para que a linha seja incluída no DataFrame filtrado.
+
+#### Mais exemplos:
+
+**Exemplo 1: Filtrando com `|` (OU lógico)**
 
 ```python
 # Filtrar onde 'Categoria' é 'Categoria A' ou 'Preço' > 15
 df_filtrado = df[(df['Categoria'] == 'Categoria A') | (df['Preço'] > 15)]
 print(df_filtrado)
 ```
+
+**Explicação**:
+Neste caso, estamos selecionando as linhas onde **uma ou ambas** as condições são verdadeiras: a categoria é 'Categoria A' **ou** o preço é maior que 15.
+
+**Exemplo 2: Filtrando com `~` (NÃO lógico)**
+
+```python
+# Filtrar todas as linhas onde a categoria NÃO é 'Categoria B'
+df_filtrado = df[~(df['Categoria'] == 'Categoria B')]
+print(df_filtrado)
+```
+
+**Explicação**:
+Aqui estamos usando o operador `~` para inverter a condição. Ou seja, todas as linhas onde a categoria **não** é 'Categoria B' serão incluídas.
+
+**Exemplo 3: Múltiplas condições com três critérios**
+
+```python
+# Filtrar onde 'Idade' > 25, 'Salário' > 4000 e 'Categoria' é 'Categoria A'
+df_filtrado = df[(df['Idade'] > 25) & (df['Salário'] > 4000) & (df['Categoria'] == 'Categoria A')]
+print(df_filtrado)
+```
+
+**Explicação**:
+Aqui estamos combinando três condições: a idade deve ser maior que 25, o salário maior que 4000 e a categoria deve ser 'Categoria A'. Todas as três condições devem ser verdadeiras para que a linha seja incluída.
+
+**Exemplo 4: Condições complexas com `&`, `|`, e `~`**
+
+```python
+# Filtrar onde 'Idade' > 30 e ('Salário' > 5000 ou 'Categoria' é 'Categoria A'), exceto 'Nome' não ser 'Ana'
+df_filtrado = df[(df['Idade'] > 30) & ((df['Salário'] > 5000) | (df['Categoria'] == 'Categoria A')) & ~(df['Nome'] == 'Ana')]
+print(df_filtrado)
+```
+
+**Explicação**:
+Neste exemplo mais complexo, filtramos as linhas onde a idade é maior que 30 **e** ou o salário é maior que 5000 **ou** a categoria é 'Categoria A'. Além disso, também estamos excluindo as linhas onde o nome é 'Ana'.
+
+#### Dicas práticas:
+
+- **Uso de parênteses**: Sempre use parênteses em torno de cada condição, pois a ausência deles pode resultar em erros de precedência.
+- **Clareza no código**: Em operações complexas, é útil dividir suas condições em variáveis nomeadas para tornar o código mais legível.
+
+**Exemplo 5: Usando variáveis para tornar o código mais legível**
+
+```python
+condicao_idade = df['Idade'] > 30
+condicao_salario = df['Salário'] > 5000
+condicao_categoria = df['Categoria'] == 'Categoria A'
+
+# Combinação das condições
+df_filtrado = df[condicao_idade & (condicao_salario | condicao_categoria)]
+print(df_filtrado)
+```
+
+**Explicação**:
+Aqui, dividimos as condições em variáveis para facilitar a compreensão do filtro complexo. A vantagem de fazer isso é que o código se torna mais fácil de manter e ajustar se necessário.
+
+#### Comparação com o método `query`:
+
+Você também pode utilizar o método `query()` para expressar as mesmas condições de forma ainda mais legível, especialmente quando está trabalhando com condições complexas.
+
+```python
+# Usando query para fazer a mesma filtragem do Exemplo 5
+df_filtrado = df.query('Idade > 30 and (Salário > 5000 or Categoria == "Categoria A")')
+print(df_filtrado)
+```
+
+**Explicação**:
+Usar `query()` é útil para manter seu código mais limpo e intuitivo, especialmente para quem está acostumado com SQL ou linguagens similares.
 
 ---
 
