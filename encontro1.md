@@ -1086,34 +1086,137 @@ print(nulos_selecionados)
 
 <a id="9"></a>
 
-## 9. Remoção de Duplicatas
+### 9. Remoção de Duplicatas
 
-Remover duplicatas é útil para evitar ruído nos dados.
+Remover duplicatas é uma etapa importante na limpeza de dados para evitar ruído ou distorções na análise. Linhas duplicadas podem ocorrer devido a falhas no processo de entrada de dados ou durante a combinação de diferentes conjuntos de dados. O Pandas oferece métodos fáceis e eficientes para identificar e remover essas duplicatas.
+
+---
 
 <a id="9.1"></a>
 
-### 9.1 Identificar duplicatas
+### 9.1 Identificar Duplicatas
 
-**Exemplo 44:**
+O método `duplicated()` é utilizado para identificar duplicatas em um DataFrame. Ele retorna uma Series booleana indicando `True` para as linhas duplicadas e `False` para as linhas únicas. Por padrão, ele considera todas as colunas ao verificar duplicatas, mas é possível ajustar o comportamento com diferentes parâmetros.
+
+#### Exemplos de Identificação de Duplicatas:
+
+**Exemplo 1: Verificar todas as duplicatas no DataFrame**
 
 ```python
-# Verificar linhas duplicadas
+# Verificar linhas duplicadas no DataFrame inteiro
 duplicatas = df.duplicated()
 print(duplicatas)
 ```
+
+**Exemplo 2: Verificar duplicatas com base em colunas específicas**
+
+```python
+# Verificar duplicatas apenas com base na coluna 'Nome'
+duplicatas = df.duplicated(subset=['Nome'])
+print(duplicatas)
+```
+
+**Exemplo 3: Considerar apenas a primeira ocorrência como única**
+
+```python
+# Verificar duplicatas, mantendo a primeira ocorrência
+duplicatas = df.duplicated(keep='first')
+print(duplicatas)
+```
+
+**Exemplo 4: Considerar apenas a última ocorrência como única**
+
+```python
+# Verificar duplicatas, mantendo a última ocorrência
+duplicatas = df.duplicated(keep='last')
+print(duplicatas)
+```
+
+**Exemplo 5: Marcar todas as ocorrências duplicadas como `True`**
+
+```python
+# Verificar duplicatas, marcando todas as ocorrências duplicadas como True
+duplicatas = df.duplicated(keep=False)
+print(duplicatas)
+```
+
+#### Parâmetros úteis do `duplicated()`:
+
+- **`subset`**: Define as colunas a serem consideradas na verificação de duplicatas.
+- **`keep='first'`** (padrão): Marca todas as duplicatas como `True`, exceto a primeira ocorrência.
+- **`keep='last'`**: Marca todas as duplicatas como `True`, exceto a última ocorrência.
+- **`keep=False`**: Marca todas as ocorrências duplicadas como `True`.
 
 ---
 
 <a id="9.2"></a>
 
-### 9.2 Remover duplicatas
+### 9.2 Remover Duplicatas
 
-**Exemplo 45:**
+O método `drop_duplicates()` remove as linhas duplicadas de um DataFrame. Assim como no `duplicated()`, você pode especificar se deseja manter a primeira ou última ocorrência de cada valor duplicado.
+
+#### Exemplos de Remoção de Duplicatas:
+
+**Exemplo 1: Remover todas as duplicatas, mantendo a primeira ocorrência**
 
 ```python
-# Remover linhas duplicadas
+# Remover linhas duplicadas, mantendo a primeira ocorrência
 df_unico = df.drop_duplicates()
 print(df_unico)
+```
+
+**Exemplo 2: Remover duplicatas, mantendo apenas a última ocorrência**
+
+```python
+# Remover duplicatas, mantendo a última ocorrência
+df_unico = df.drop_duplicates(keep='last')
+print(df_unico)
+```
+
+**Exemplo 3: Remover todas as duplicatas sem manter nenhuma ocorrência**
+
+```python
+# Remover todas as duplicatas, mantendo apenas linhas 100% únicas
+df_unico = df.drop_duplicates(keep=False)
+print(df_unico)
+```
+
+**Exemplo 4: Remover duplicatas com base em colunas específicas**
+
+```python
+# Remover duplicatas com base apenas na coluna 'Nome'
+df_unico_nome = df.drop_duplicates(subset=['Nome'])
+print(df_unico_nome)
+```
+
+#### Parâmetros importantes do `drop_duplicates()`:
+
+- **`subset`**: Especifica as colunas nas quais verificar duplicatas.
+- **`keep='first'`** (padrão): Mantém a primeira ocorrência e remove as duplicatas subsequentes.
+- **`keep='last'`**: Mantém a última ocorrência e remove as anteriores.
+- **`keep=False`**: Remove todas as duplicatas, sem manter nenhuma ocorrência.
+- **`inplace=False`**: Se `True`, modifica o DataFrame original, sem retornar uma nova cópia.
+
+---
+
+### Contar Duplicatas
+
+Antes de remover duplicatas, pode ser útil contar quantas linhas duplicadas existem no DataFrame. Isso pode ser feito utilizando o método `duplicated()` em combinação com `sum()`.
+
+**Exemplo 5: Contar o número de linhas duplicadas**
+
+```python
+# Contar o número de linhas duplicadas no DataFrame
+num_duplicatas = df.duplicated().sum()
+print(f'Número de duplicatas: {num_duplicatas}')
+```
+
+**Exemplo 6: Contar duplicatas com base em colunas específicas**
+
+```python
+# Contar duplicatas com base na coluna 'Nome'
+num_duplicatas_nome = df.duplicated(subset=['Nome']).sum()
+print(f'Número de duplicatas na coluna "Nome": {num_duplicatas_nome}')
 ```
 
 ---
