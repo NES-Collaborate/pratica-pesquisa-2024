@@ -1221,37 +1221,149 @@ print(f'Número de duplicatas na coluna "Nome": {num_duplicatas_nome}')
 
 ---
 
-<a id="10"></a>
+### 10. Agrupamento e Agregação de Dados
 
-## 10. Agrupamento e Agregação de Dados
+Agrupamento e agregação são técnicas poderosas e fundamentais para análise de grandes conjuntos de dados. O Pandas facilita essas operações através de métodos como `groupby()` e `agg()`, que permitem resumir, contar e transformar dados com base em critérios específicos. Essas operações são essenciais para entender padrões, tendências e insights em seus dados.
 
-Agrupamento e agregação são fundamentais para análise de grandes conjuntos de dados.
+---
 
 <a id="10.1"></a>
 
 ### 10.1 Uso de `groupby`
 
-**Exemplo 47:**
+O método `groupby()` permite agrupar dados com base em uma ou mais colunas. Depois de agrupar, você pode aplicar várias funções de agregação, como contagem, soma, média, entre outras, para resumir os dados em cada grupo.
+
+#### Estrutura básica:
 
 ```python
-# Agrupar por 'Faixa Etária' e contar quantos registros em cada grupo
+df.groupby('coluna_de_agrupamento').agg(função_de_agregação)
+```
+
+#### Exemplos de Agrupamento:
+
+**Exemplo 1: Contar registros por grupo**
+
+```python
+# Agrupar por 'Faixa Etária' e contar quantos registros existem em cada grupo
 grupo = df.groupby('Faixa Etária').size()
 print(grupo)
 ```
+
+**Explicação**: Neste exemplo, os dados são agrupados pela coluna `Faixa Etária`, e o método `size()` conta quantas linhas pertencem a cada grupo.
+
+**Exemplo 2: Agrupar por múltiplas colunas e contar**
+
+```python
+# Agrupar por 'Faixa Etária' e 'Categoria', contando quantos registros existem em cada combinação
+grupo = df.groupby(['Faixa Etária', 'Categoria']).size()
+print(grupo)
+```
+
+**Explicação**:
+Aqui estamos agrupando os dados por mais de uma coluna (`Faixa Etária` e `Categoria`). O resultado mostra quantos registros existem para cada combinação de valores dessas colunas.
+
+**Exemplo 3: Agrupar e aplicar funções de agregação simples**
+
+```python
+# Agrupar por 'Categoria' e calcular a média dos preços
+grupo = df.groupby('Categoria')['Preço'].mean()
+print(grupo)
+```
+
+**Explicação**:
+Os dados são agrupados por `Categoria`, e a função `mean()` é aplicada à coluna `Preço`, retornando a média do preço para cada grupo.
+
+**Exemplo 4: Agrupar e contar valores não nulos**
+
+```python
+# Agrupar por 'Categoria' e contar quantos valores não nulos existem em 'Preço'
+grupo = df.groupby('Categoria')['Preço'].count()
+print(grupo)
+```
+
+**Explicação**:
+Neste exemplo, a função `count()` conta o número de valores não nulos na coluna `Preço` para cada grupo de `Categoria`.
 
 ---
 
 <a id="10.2"></a>
 
-### 10.2 Funções de agregação
+### 10.2 Funções de Agregação
 
-**Exemplo 49:**
+Após agrupar os dados com `groupby()`, você pode aplicar funções de agregação para resumir os dados de várias maneiras. Pandas oferece funções de agregação padrão, como `mean()`, `sum()`, `count()`, além da capacidade de usar funções customizadas ou aplicar várias funções de agregação de uma só vez.
+
+#### Exemplos de Agregação:
+
+**Exemplo 1: Usar uma função de agregação**
 
 ```python
-# Usar múltiplas funções de agregação
-grupo = df.groupby('Categoria').agg({'Preço': ['mean', 'min', 'max']})
+# Agrupar por 'Categoria' e calcular a soma dos preços
+grupo = df.groupby('Categoria')['Preço'].sum()
 print(grupo)
 ```
+
+**Explicação**:
+Aqui, estamos agrupando os dados pela coluna `Categoria` e somando os valores da coluna `Preço` para cada grupo.
+
+**Exemplo 2: Aplicar múltiplas funções de agregação em uma única coluna**
+
+```python
+# Agrupar por 'Categoria' e aplicar as funções de média, mínimo e máximo no 'Preço'
+grupo = df.groupby('Categoria')['Preço'].agg(['mean', 'min', 'max'])
+print(grupo)
+```
+
+**Explicação**:
+Neste exemplo, estamos aplicando três funções de agregação (`mean`, `min`, `max`) na coluna `Preço` para cada grupo de `Categoria`. Isso retorna um DataFrame com o valor médio, mínimo e máximo dos preços para cada categoria.
+
+**Exemplo 3: Usar diferentes funções de agregação em colunas diferentes**
+
+```python
+# Agrupar por 'Categoria' e aplicar diferentes funções de agregação para 'Preço' e 'Quantidade'
+grupo = df.groupby('Categoria').agg({
+    'Preço': ['mean', 'sum'],
+    'Quantidade': ['count', 'max']
+})
+print(grupo)
+```
+
+**Explicação**:
+Aqui aplicamos a função `mean` e `sum` na coluna `Preço` e `count` e `max` na coluna `Quantidade`, após agrupar os dados pela coluna `Categoria`.
+
+#### Exemplo 4: Aplicar uma função customizada de agregação
+
+```python
+# Definir uma função personalizada que calcula a diferença entre o máximo e o mínimo
+def faixa_max_min(series):
+    return series.max() - series.min()
+
+# Agrupar por 'Categoria' e aplicar a função customizada em 'Preço'
+grupo = df.groupby('Categoria')['Preço'].agg(faixa_max_min)
+print(grupo)
+```
+
+**Explicação**:
+Neste exemplo, usamos uma função personalizada `faixa_max_min` que calcula a diferença entre o valor máximo e o valor mínimo em cada grupo da coluna `Preço`.
+
+#### Exemplo 5: Aplicar múltiplas funções com nomes customizados
+
+```python
+# Aplicar funções e renomeá-las
+grupo = df.groupby('Categoria').agg(
+    média_preço=('Preço', 'mean'),
+    total_preço=('Preço', 'sum'),
+    total_produtos=('Quantidade', 'sum')
+)
+print(grupo)
+```
+
+---
+
+### Parâmetros Importantes do `groupby()` e `agg()`:
+
+- **`as_index=False`**: Mantém a coluna de agrupamento como uma coluna normal no resultado, em vez de transformá-la em índice.
+- **`dropna=True`**: Remove grupos onde todas as chaves são `NaN` (padrão: True).
+- **`agg()`**: Permite aplicar múltiplas funções de agregação simultaneamente, seja com funções embutidas (`mean`, `sum`, etc.) ou funções personalizadas.
 
 ---
 
