@@ -11,6 +11,9 @@ pandas = "^2.2.3"
 fastapi = "^0.115.0"
 
 
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.27.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
