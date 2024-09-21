@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "pratica-pesquisa-2024"
+version = "0.1.0"
+description = "Materiais, códigos, exemplos e mais relacionados ao \"Curso\"."
+authors = ["Felipe Adeildo <contato@felipeadeildo.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pandas = "^2.2.3"
+fastapi = "^0.115.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
