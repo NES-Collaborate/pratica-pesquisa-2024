@@ -1369,21 +1369,74 @@ print(grupo)
 
 <a id="11"></a>
 
-## 11. Ordenação de Dados
+### 11. Ordenação de Dados
 
-A ordenação é útil para visualizar ou trabalhar com os dados de forma organizada.
+A ordenação de dados é uma operação comum para organizar os dados em uma sequência lógica, seja por valores de colunas ou pelo índice do DataFrame. O Pandas oferece métodos eficientes como `sort_values()` e `sort_index()` para realizar essa tarefa de forma flexível.
+
+---
 
 <a id="11.1"></a>
 
 ### 11.1 Ordenação com `sort_values`
 
-**Exemplo 51:**
+O método `sort_values()` permite ordenar os dados com base em uma ou mais colunas. Você pode especificar se a ordenação deve ser ascendente ou descendente, e também definir como lidar com valores nulos.
+
+#### Exemplos de Uso do `sort_values()`:
+
+**Exemplo 1: Ordenar por uma única coluna (ascendente)**
 
 ```python
-# Ordenar por 'Salário' ascendente
+# Ordenar por 'Salário' em ordem crescente (padrão)
 df_ordenado = df.sort_values(by='Salário')
 print(df_ordenado)
 ```
+
+**Exemplo 2: Ordenar por uma única coluna (descendente)**
+
+```python
+# Ordenar por 'Salário' em ordem decrescente
+df_ordenado = df.sort_values(by='Salário', ascending=False)
+print(df_ordenado)
+```
+
+**Exemplo 3: Ordenar por múltiplas colunas**
+
+```python
+# Ordenar por 'Categoria' e depois por 'Salário'
+df_ordenado = df.sort_values(by=['Categoria', 'Salário'])
+print(df_ordenado)
+```
+
+**Exemplo 4: Ordenar por múltiplas colunas com diferentes ordens**
+
+```python
+# Ordenar por 'Categoria' (ascendente) e 'Salário' (descendente)
+df_ordenado = df.sort_values(by=['Categoria', 'Salário'], ascending=[True, False])
+print(df_ordenado)
+```
+
+**Exemplo 5: Ordenar tratando valores nulos (colocando-os no início)**
+
+```python
+# Ordenar por 'Salário' com valores nulos no início
+df_ordenado = df.sort_values(by='Salário', na_position='first')
+print(df_ordenado)
+```
+
+**Exemplo 6: Ordenar por mais de uma coluna, com valores nulos no final**
+
+```python
+# Ordenar por 'Categoria' e 'Salário', com valores nulos no final
+df_ordenado = df.sort_values(by=['Categoria', 'Salário'], na_position='last')
+print(df_ordenado)
+```
+
+#### Parâmetros úteis do `sort_values()`:
+
+- **`by`**: Coluna(s) para realizar a ordenação.
+- **`ascending`**: Definir se a ordem é ascendente (`True`) ou descendente (`False`).
+- **`na_position`**: Define se valores nulos serão colocados no início (`first`) ou no final (`last`).
+- **`inplace=False`**: Modificar o DataFrame original ou retornar uma cópia ordenada.
 
 ---
 
@@ -1391,13 +1444,54 @@ print(df_ordenado)
 
 ### 11.2 Ordenação com `sort_index`
 
-**Exemplo 54:**
+O método `sort_index()` é utilizado para ordenar o DataFrame ou Series com base no índice. Ele pode ser útil quando os dados têm um índice significativo, como datas ou rótulos.
+
+#### Exemplos de Uso do `sort_index()`:
+
+**Exemplo 1: Ordenar pelo índice em ordem crescente (padrão)**
 
 ```python
-# Ordenar pelo índice
+# Ordenar o DataFrame pelo índice em ordem crescente
 df_ordenado = df.sort_index()
 print(df_ordenado)
 ```
+
+**Exemplo 2: Ordenar pelo índice em ordem decrescente**
+
+```python
+# Ordenar o DataFrame pelo índice em ordem decrescente
+df_ordenado = df.sort_index(ascending=False)
+print(df_ordenado)
+```
+
+**Exemplo 3: Ordenar por índice de colunas (no caso de transpor o DataFrame)**
+
+```python
+# Ordenar as colunas (índice de colunas) em ordem crescente
+df_ordenado_colunas = df.T.sort_index()
+print(df_ordenado_colunas)
+```
+
+**Exemplo 4: Ordenar por MultiIndex**
+
+Se o DataFrame possuir um índice hierárquico (MultiIndex), você pode ordenar os níveis de forma específica.
+
+```python
+# Ordenar o DataFrame com MultiIndex pelo primeiro nível
+df_ordenado = df.sort_index(level=0)
+print(df_ordenado)
+```
+
+#### Parâmetros úteis do `sort_index()`:
+
+- **`ascending=True`**: Definir se a ordenação é ascendente (`True`) ou descendente (`False`).
+- **`axis=0`**: Ordenar o índice das linhas (padrão) ou o índice das colunas (`axis=1`).
+- **`level`**: Especifica o nível para ordenar em um índice hierárquico (MultiIndex).
+- **`inplace=False`**: Modificar o DataFrame original ou retornar uma cópia ordenada.
+
+---
+
+Com esses exemplos, você pode organizar seus dados de maneira eficiente com base em colunas ou índices, utilizando tanto `sort_values()` quanto `sort_index()` para diferentes necessidades.
 
 ---
 
