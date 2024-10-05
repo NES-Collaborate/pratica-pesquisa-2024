@@ -1,0 +1,73 @@
+{% extends "base.html" %} {% block content %}
+<div class="hero h-[calc(100vh-12rem)] bg-base-200">
+  <div class="hero-content text-center">
+    <div class="max-w-md">
+      <h1 class="text-5xl font-bold mb-8">Parabéns, {{ session.nome }}!</h1>
+      <p class="text-2xl mb-8">Você completou o CTF Pandas Challenge!</p>
+
+      <div class="stats shadow">
+        <div class="stat">
+          <div class="stat-figure text-primary">
+            <i data-lucide="check-circle" class="w-8 h-8"></i>
+          </div>
+          <div class="stat-title">Questões Corretas</div>
+          <div class="stat-value">
+            {{ questoes_corretas }} / {{ total_questoes }}
+          </div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-figure text-secondary">
+            <i data-lucide="clock" class="w-8 h-8"></i>
+          </div>
+          <div class="stat-title">Tempo Total</div>
+          <div class="stat-value">{{ tempo_total }} min</div>
+        </div>
+      </div>
+
+      <div class="my-8">
+        <h2 class="text-2xl font-bold mb-4">Estatísticas Detalhadas</h2>
+        <ul class="list-disc list-inside text-left">
+          <li>
+            Média de tempo por questão: {{ tempo_medio_por_questao }} minutos
+          </li>
+          <li>Total de tentativas: {{ total_tentativas }}</li>
+          <li>
+            Questão com mais tentativas: #{{ questao_mais_tentativas }} ({{
+            max_tentativas }} tentativas)
+          </li>
+          <li>
+            Questão que levou mais tempo: #{{ questao_mais_tempo }} ({{
+            tempo_max }} minutos)
+          </li>
+          <li>
+            Questão resolvida mais rápido: #{{ questao_mais_rapida }} ({{
+            tempo_min }} minutos)
+          </li>
+          <li>
+            Questões acertadas de primeira: {{
+            questoes_primeira_tentativa|length }}
+          </li>
+        </ul>
+      </div>
+
+      <div class="mt-8">
+        <a href="{{ url_for('index') }}" class="btn btn-primary">
+          Voltar ao Início
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', (event) => {
+    const jsConfetti = new JSConfetti()
+    jsConfetti.addConfetti({
+      emojis: ['🐼', '🏆', '🎉', '🎊', '🥳'],
+      emojiSize: 50,
+      confettiNumber: 127,
+    })
+  })
+</script>
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends "base.html" %} {% block content %}
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-4xl font-bold mb-8">Placar do CTF Pandas Challenge</h1>
+
+  <div class="stats shadow mb-8">
+    <div class="stat">
+      <div class="stat-figure text-secondary">
+        <i data-lucide="users" class="w-8 h-8"></i>
+      </div>
+      <div class="stat-title">Total de Participantes</div>
+      <div class="stat-value">{{ total_usuarios }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-figure text-secondary">
+        <i data-lucide="list-checks" class="w-8 h-8"></i>
+      </div>
+      <div class="stat-title">Total de Questões</div>
+      <div class="stat-value">{{ total_questoes }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-figure text-secondary">
+        <i data-lucide="percent" class="w-8 h-8"></i>
+      </div>
+      <div class="stat-title">Acertividade Média</div>
+      <div class="stat-value">{{ (media_acertividade * 100)|round(2) }}%</div>
+    </div>
+    <div class="stat">
+      <div class="stat-figure text-secondary">
+        <i data-lucide="clock" class="w-8 h-8"></i>
+      </div>
+      <div class="stat-title">Tempo Médio por Questão</div>
+      <div class="stat-value">{{ media_tempo|round(2) }} min</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div>
+      <h2 class="text-2xl font-bold mb-4">Top 10 - Menor Tempo Médio</h2>
+      <div class="overflow-x-auto">
+        <table class="table table-zebra w-full">
+          <thead>
+            <tr>
+              <th>Posição</th>
+              <th>Nome</th>
+              <th>Módulo</th>
+              <th>Tempo Médio</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in top_tempo %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ user.nome }}</td>
+              <td>{{ user.modulo }}</td>
+              <td>{{ user.tempo_medio|round(2) }} min</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% if posicao_tempo %}
+      <p class="mt-2">Sua posição neste ranking: {{ posicao_tempo }}º</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-bold mb-4">Top 10 - Maior Acertividade</h2>
+      <div class="overflow-x-auto">
+        <table class="table table-zebra w-full">
+          <thead>
+            <tr>
+              <th>Posição</th>
+              <th>Nome</th>
+              <th>Módulo</th>
+              <th>Acertividade</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in top_acertividade %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ user.nome }}</td>
+              <td>{{ user.modulo }}</td>
+              <td>{{ (user.acertividade * 100)|round(2) }}%</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% if posicao_acertividade %}
+      <p class="mt-2">Sua posição neste ranking: {{ posicao_acertividade }}º</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-bold mb-4">Top 10 - Maior Eficiência</h2>
+      <div class="overflow-x-auto">
+        <table class="table table-zebra w-full">
+          <thead>
+            <tr>
+              <th>Posição</th>
+              <th>Nome</th>
+              <th>Módulo</th>
+              <th>Erro Médio</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in top_eficiencia %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ user.nome }}</td>
+              <td>{{ user.modulo }}</td>
+              <td>{{ user.erro_medio|round(2) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% if posicao_eficiencia %}
+      <p class="mt-2">Sua posição neste ranking: {{ posicao_eficiencia }}º</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-bold mb-4">Top 10 - Questões Mais Difíceis</h2>
+      <div class="overflow-x-auto">
+        <table class="table table-zebra w-full">
+          <thead>
+            <tr>
+              <th>Posição</th>
+              <th>Questão</th>
+              <th>Dificuldade</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for questao in top_dificeis %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ questao.enunciado[:50] }}...</td>
+              <td>{{ questao.dificuldade|round(2) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

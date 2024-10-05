@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CTF Topado</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@4.12.12/dist/full.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+  </head>
+  <body class="flex flex-col min-h-screen">
+    <div class="navbar bg-base-100 shadow-md">
+      <div class="flex-1">
+        <a
+          href="{{ url_for('index') }}"
+          class="btn btn-ghost normal-case text-xl"
+        >
+          <i data-lucide="flag" class="w-6 h-6 mr-2"></i>
+          CTF Topado
+        </a>
+      </div>
+      <div class="flex justify-between items-center gap-3">
+        {% if 'user_id' in session %}
+        <span class="ml-2 text-lg"> Simbora, {{ session.nome }}!!</span>
+        <a
+          href="{{ url_for('placar') }}"
+          class="btn btn-secondary"
+          title="Ver Placar"
+        >
+          <i data-lucide="bar-chart-2" class="w-5 h-5 mr-2"></i>
+          Placar
+        </a>
+        <a
+          href="{{ url_for('download_csv') }}"
+          class="btn btn-accent"
+          title="Baixar CSV"
+        >
+          <i data-lucide="download" class="w-5 h-5 mr-2"></i>
+          Baixar Base de Dados
+        </a>
+        <a href="{{ url_for('logout') }}" class="btn btn-error">
+          <i data-lucide="log-out" class="w-5 h-5 mr-2"></i>
+          Sair
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 flex-grow">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div
+        class="alert {{ 'alert-success' if category == 'success' else 'alert-error' }} mb-4"
+      >
+        <i
+          data-lucide="{{ 'check-circle' if category == 'success' else 'alert-circle' }}"
+          class="w-6 h-6 mr-2"
+        ></i>
+        <span>{{ message }}</span>
+      </div>
+      {% endfor %} {% endif %} {% endwith %} {% block content %}{% endblock %}
+    </div>
+
+    <footer
+      class="fixed bottom-0 left-0 footer footer-center p-2 bg-base-300 text-base-content"
+    >
+      <div class="flex items-center justify-center gap-4">
+        <p class="flex items-center gap-2">
+          <i data-lucide="heart" class="size-4 text-red-600"></i>
+          Desenvolvido por
+          <a
+            href="https://felipeadeildo.com"
+            target="_blank"
+            class="link link-hover font-bold text-lg"
+          >
+            felipeadeildo.com
+          </a>
+        </p>
+        <a
+          href="https://github.com/nes-collaborate"
+          target="_blank"
+          class="btn btn-sm btn-circle"
+        >
+          <i data-lucide="github" class="size-4"></i>
+        </a>
+      </div>
+    </footer>
+
+    <script>
+      lucide.createIcons()
+    </script>
+  </body>
+</html>
