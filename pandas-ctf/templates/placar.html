@@ -21,21 +21,85 @@
       <div class="stat-figure text-secondary">
         <i data-lucide="percent" class="w-8 h-8"></i>
       </div>
-      <div class="stat-title">Acertividade Média</div>
-      <div class="stat-value">{{ (media_acertividade * 100)|round(2) }}%</div>
+      <div class="stat-title">Assertividade Média</div>
+      <div class="stat-value">{{ (media_assertividade * 100)|round(2) }}%</div>
     </div>
     <div class="stat">
       <div class="stat-figure text-secondary">
         <i data-lucide="clock" class="w-8 h-8"></i>
       </div>
       <div class="stat-title">Tempo Médio por Questão</div>
-      <div class="stat-value">{{ media_tempo|round(2) }} min</div>
+      <div class="stat-value">
+        {{ (media_tempo_por_questao / 60)|round(2) }} min
+      </div>
+    </div>
+    <div class="stat">
+      <div class="stat-figure text-secondary">
+        <i data-lucide="x-circle" class="w-8 h-8"></i>
+      </div>
+      <div class="stat-title">Erro Médio</div>
+      <div class="stat-value">{{ media_erro|round(2) }}</div>
+    </div>
+  </div>
+
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold mb-4">
+      Pódio - Primeiros a Concluir as 50 Questões
+    </h2>
+    <div class="flex justify-around items-end">
+      {% for user in podio %}
+      <div class="text-center">
+        <div class="avatar placeholder">
+          <div class="bg-neutral-focus text-neutral-content rounded-full w-24">
+            <span class="text-3xl">{{ loop.index }}</span>
+          </div>
+        </div>
+        <div class="mt-4">
+          <p class="font-bold">{{ user.nome }}</p>
+          <p>{{ user.modulo }}</p>
+          <p>Tempo: {{ (user.tempo_total / 3600)|round(2) }} horas</p>
+        </div>
+      </div>
+      {% endfor %}
     </div>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
     <div>
-      <h2 class="text-2xl font-bold mb-4">Top 10 - Menor Tempo Médio</h2>
+      <h2 class="text-2xl font-bold mb-4">Top 10 - Maior Assertividade</h2>
+      <div class="overflow-x-auto">
+        <table class="table table-zebra w-full">
+          <thead>
+            <tr>
+              <th>Posição</th>
+              <th>Nome</th>
+              <th>Módulo</th>
+              <th>Assertividade</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in top_assertividade %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ user.nome }}</td>
+              <td>{{ user.modulo }}</td>
+              <td>{{ (user.assertividade * 100)|round(2) }}%</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% if posicao_assertividade %}
+      <p class="mt-2">
+        Sua posição neste ranking: {{ posicao_assertividade }}º
+      </p>
+      {% endif %}
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-bold mb-4">
+        Top 10 - Menor Tempo Médio por Questão
+      </h2>
       <div class="overflow-x-auto">
         <table class="table table-zebra w-full">
           <thead>
@@ -47,53 +111,24 @@
             </tr>
           </thead>
           <tbody>
-            {% for user in top_tempo %}
+            {% for user in top_tempo_medio %}
             <tr>
               <td>{{ loop.index }}</td>
               <td>{{ user.nome }}</td>
               <td>{{ user.modulo }}</td>
-              <td>{{ user.tempo_medio|round(2) }} min</td>
+              <td>{{ (user.tempo_medio_por_questao / 60)|round(2) }} min</td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
-      {% if posicao_tempo %}
-      <p class="mt-2">Sua posição neste ranking: {{ posicao_tempo }}º</p>
+      {% if posicao_tempo_medio %}
+      <p class="mt-2">Sua posição neste ranking: {{ posicao_tempo_medio }}º</p>
       {% endif %}
     </div>
 
     <div>
-      <h2 class="text-2xl font-bold mb-4">Top 10 - Maior Acertividade</h2>
-      <div class="overflow-x-auto">
-        <table class="table table-zebra w-full">
-          <thead>
-            <tr>
-              <th>Posição</th>
-              <th>Nome</th>
-              <th>Módulo</th>
-              <th>Acertividade</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for user in top_acertividade %}
-            <tr>
-              <td>{{ loop.index }}</td>
-              <td>{{ user.nome }}</td>
-              <td>{{ user.modulo }}</td>
-              <td>{{ (user.acertividade * 100)|round(2) }}%</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      {% if posicao_acertividade %}
-      <p class="mt-2">Sua posição neste ranking: {{ posicao_acertividade }}º</p>
-      {% endif %}
-    </div>
-
-    <div>
-      <h2 class="text-2xl font-bold mb-4">Top 10 - Maior Eficiência</h2>
+      <h2 class="text-2xl font-bold mb-4">Top 10 - Menor Erro Médio</h2>
       <div class="overflow-x-auto">
         <table class="table table-zebra w-full">
           <thead>

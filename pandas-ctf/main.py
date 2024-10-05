@@ -285,11 +285,9 @@ def placar():
         """)
         dados = cursor.fetchall()
 
-        # Obter total de questões
+        # Obter total de questões e dados das questões
         cursor.execute("SELECT COUNT(*) FROM questoes")
         total_questoes = cursor.fetchone()[0]
-
-        # Obter dados das questões
         cursor.execute("SELECT id, enunciado FROM questoes")
         questoes = {row["id"]: row["enunciado"] for row in cursor.fetchall()}
 
@@ -329,34 +327,31 @@ def placar():
             if len(q) > 1
         )
 
+        assertividade = (
+            questoes_corretas / total_tentativas if total_tentativas > 0 else 0
+        )
+        tempo_medio_por_questao = (
+            tempo_total / questoes_corretas if questoes_corretas > 0 else float("inf")
+        )
+        erro_medio = (
+            (total_tentativas - questoes_corretas) / total_questoes
+            if total_questoes > 0
+            else 0
+        )
+
         estatisticas.append(
             {
                 "id": user_id,
                 "nome": user_data["nome"],
                 "modulo": user_data["modulo"],
                 "questoes_corretas": questoes_corretas,
-                "acertividade": questoes_corretas / total_questoes
-                if total_questoes > 0
-                else 0,
-                "tempo_medio": tempo_total / questoes_corretas
-                if questoes_corretas > 0
-                else float("inf"),
-                "tentativas_media": total_tentativas / total_questoes
-                if total_questoes > 0
-                else 0,
-                "erro_medio": (total_tentativas - questoes_corretas) / total_questoes
-                if total_questoes > 0
-                else 0,
+                "total_tentativas": total_tentativas,
+                "assertividade": assertividade,
+                "tempo_total": tempo_total,
+                "tempo_medio_por_questao": tempo_medio_por_questao,
+                "erro_medio": erro_medio,
             }
         )
-
-    # Calcular rankings
-    k = 10  # Número de top usuários a serem exibidos
-    top_tempo = sorted(estatisticas, key=lambda x: x["tempo_medio"])[:k]
-    top_acertividade = sorted(
-        estatisticas, key=lambda x: x["acertividade"], reverse=True
-    )[:k]
-    top_eficiencia = sorted(estatisticas, key=lambda x: x["erro_medio"])[:k]
 
     # Calcular estatísticas das questões
     estatisticas_questoes = []
@@ -381,26 +376,42 @@ def placar():
             }
         )
 
+    # Calcular rankings
+    k = 10  # Número de top usuários/questões a serem exibidos
+    top_assertividade = sorted(
+        estatisticas, key=lambda x: x["assertividade"], reverse=True
+    )[:k]
+    top_tempo_medio = sorted(estatisticas, key=lambda x: x["tempo_medio_por_questao"])[
+        :k
+    ]
+    top_eficiencia = sorted(estatisticas, key=lambda x: x["erro_medio"])[:k]
     top_dificeis = sorted(
         estatisticas_questoes, key=lambda x: x["dificuldade"], reverse=True
     )[:k]
-    top_faceis = sorted(estatisticas_questoes, key=lambda x: x["dificuldade"])[:k]
+
+    # Pódio de quem terminou as 50 questões
+    podio = sorted(
+        [user for user in estatisticas if user["questoes_corretas"] == total_questoes],
+        key=lambda x: x["tempo_total"],
+    )[:3]
 
     # Obter posição do usuário atual nos rankings
     user_id = session["user_id"]
-    posicao_tempo = next(
+    posicao_assertividade = next(
         (
             i + 1
-            for i, e in enumerate(sorted(estatisticas, key=lambda x: x["tempo_medio"]))
+            for i, e in enumerate(
+                sorted(estatisticas, key=lambda x: x["assertividade"], reverse=True)
+            )
             if e["id"] == user_id
         ),
         None,
     )
-    posicao_acertividade = next(
+    posicao_tempo_medio = next(
         (
             i + 1
             for i, e in enumerate(
-                sorted(estatisticas, key=lambda x: x["acertividade"], reverse=True)
+                sorted(estatisticas, key=lambda x: x["tempo_medio_por_questao"])
             )
             if e["id"] == user_id
         ),
@@ -417,24 +428,29 @@ def placar():
 
     return render_template(
         "placar.html",
-        top_tempo=top_tempo,
-        top_acertividade=top_acertividade,
+        top_assertividade=top_assertividade,
+        top_tempo_medio=top_tempo_medio,
         top_eficiencia=top_eficiencia,
         top_dificeis=top_dificeis,
-        top_faceis=top_faceis,
-        posicao_tempo=posicao_tempo,
-        posicao_acertividade=posicao_acertividade,
+        podio=podio,
+        posicao_assertividade=posicao_assertividade,
+        posicao_tempo_medio=posicao_tempo_medio,
         posicao_eficiencia=posicao_eficiencia,
         total_usuarios=len(usuarios),
         total_questoes=total_questoes,
-        media_acertividade=sum(e["acertividade"] for e in estatisticas)
+        media_assertividade=sum(e["assertividade"] for e in estatisticas)
         / len(estatisticas)
         if estatisticas
         else 0,
-        media_tempo=sum(
-            e["tempo_medio"] for e in estatisticas if e["tempo_medio"] != float("inf")
+        media_tempo_por_questao=sum(
+            e["tempo_medio_por_questao"]
+            for e in estatisticas
+            if e["tempo_medio_por_questao"] != float("inf")
         )
-        / len([e for e in estatisticas if e["tempo_medio"] != float("inf")])
+        / len([e for e in estatisticas if e["tempo_medio_por_questao"] != float("inf")])
+        if estatisticas
+        else 0,
+        media_erro=sum(e["erro_medio"] for e in estatisticas) / len(estatisticas)
         if estatisticas
         else 0,
     )
